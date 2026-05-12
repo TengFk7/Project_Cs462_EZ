@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ส่วนควบคุมระบบ (Admin)</title>
+    <style>
+        body { font-family: sans-serif; background: #2c3e50; color: white; text-align: center; padding: 50px; }
+        .admin-card { background: #34495e; padding: 40px; border-radius: 15px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        h1 { color: #ecf0f1; }
+        .upload-section { margin-top: 30px; border: 2px dashed #7f8c8d; padding: 20px; border-radius: 10px; }
+        input[type="file"] { margin: 20px 0; color: white; }
+        button { background: #27ae60; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #2ecc71; }
+        .nav-link { color: #3498db; text-decoration: none; display: block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="admin-card">
+        <h1>ระบบจัดการโมเดล (Admin)</h1>
+        <p>ใช้สำหรับอัปเดตไฟล์โมเดล .h5 (เลขไทย ๓๑-๓๕)</p>
+        
+        <div class="upload-section">
+            <form action="/upload_model" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".h5" required>
+                <br>
+                <button type="submit">อัปเดตโมเดลเข้าสู่ระบบ</button>
+            </form>
+        </div>
+        
+        <a href="/" class="nav-link">← กลับไปหน้าเขียนตัวเลข (User Page)</a>
+    </div>
+</body>
+</html>

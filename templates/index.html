@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบทำนายเลขไทย ๓๑ - ๓๕</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        canvas { border: 2px solid #333; background: white; cursor: crosshair; margin-bottom: 10px; }
+        .result-box { margin-top: 20px; font-size: 24px; font-weight: bold; color: #2ecc71; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; margin: 5px; transition: 0.3s; }
+        .btn-predict { background: #3498db; color: white; }
+        .btn-predict:hover { background: #2980b9; }
+        .btn-clear { background: #e74c3c; color: white; }
+        .btn-clear:hover { background: #c0392b; }
+        .btn-admin { background: #95a5a6; color: white; margin-top: 20px; font-size: 14px; }
+        .btn-admin:hover { background: #7f8c8d; }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>เขียนเลขไทย ๓๑ - ๓๕</h2>
+        <canvas id="paintCanvas" width="280" height="280"></canvas>
+        <br>
+        <button class="btn-clear" onclick="clearCanvas()">ล้างหน้าจอ</button>
+        <button class="btn-predict" onclick="predict()">ทำนายผล</button>
+        
+        <div class="result-box" id="result">ผลการทำนาย: -</div>
+        <div id="confidence" style="color: #7f8c8d;">ความมั่นใจ: -</div>
+
+        <hr style="margin-top: 30px; border: 0; border-top: 1px solid #eee;">
+        <a href="/admin">
+            <button class="btn-admin">ส่วนควบคุมสำหรับ Admin</button>
+        </a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('paintCanvas');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 15;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'black';
+
+        canvas.onmousedown = () => { painting = true; };
+        canvas.onmouseup = () => { painting = false; ctx.beginPath(); };
+        canvas.onmousemove = (e) => {
+            if (!painting) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        };
+
+        function clearCanvas() {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('result').innerText = "ผลการทำนาย: -";
+            document.getElementById('confidence').innerText = "ความมั่นใจ: -";
+        }
+
+        async function predict() {
+            const imageData = canvas.toDataURL('image/png');
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: imageData })
+            });
+            const data = await response.json();
+            if (data.prediction) {
+                document.getElementById('result').innerText = "ผลการทำนาย: " + data.prediction;
+                document.getElementById('confidence').innerText = "ความมั่นใจ: " + (data.confidence * 100).toFixed(2) + "%";
+            }
+        }
+    </script>
+</body>
+</html>
